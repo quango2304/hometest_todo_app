@@ -71,11 +71,11 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.today_outlined),
-              label: 'Todo',
+              label: 'InComplete',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.done),
-              label: 'Done',
+              label: 'Complete',
             ),
           ],
           currentIndex: _selectedIndex,
