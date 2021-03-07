@@ -37,6 +37,19 @@ class TodoListCubit extends Cubit<TodoListState> {
     }
   }
 
+  void editTodo({TodoItem oldItem, TodoItem newItem}) {
+    try {
+      emit(TodoListUpdateLoading(todos: state.todos));
+      final itemIndex = state.todos.indexOf(oldItem);
+      state.todos.replaceRange(itemIndex, itemIndex+1, [newItem]);
+      emit(TodoListUpdateSuccess(todos: state.todos));
+      saveCache();
+    } catch (e) {
+      emit(TodoListUpdateFailure(todos: state.todos, error: e.toString()));
+      print(e);
+    }
+  }
+
   void toggleItemState(TodoItem item) {
     try {
       emit(TodoListUpdateLoading(todos: state.todos));

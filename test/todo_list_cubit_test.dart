@@ -44,6 +44,15 @@ void main() {
   );
 
   blocTest<TodoListCubit, TodoListState>(
+    'editItem',
+    build: () {
+      return todoListCubit;
+    },
+    act: (bloc) => bloc.editTodo(oldItem: TodoItem(text: '', isDone: false), newItem: TodoItem(text: 'new', isDone: false)),
+    expect: [isA<TodoListUpdateLoading>(), isA<TodoListUpdateSuccess>()],
+  );
+
+  blocTest<TodoListCubit, TodoListState>(
     'updateOrder',
     build: () {
       return todoListCubit;

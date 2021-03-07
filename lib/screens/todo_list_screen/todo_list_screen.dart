@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todoapp/models/todo_item.dart';
+import 'package:todoapp/screens/edit_todo_dialog.dart';
 import 'package:todoapp/screens/todo_list_screen/cubit/todo_list_cubit.dart';
 import 'package:todoapp/screens/todo_list_screen/todo_item.dart';
 
@@ -10,6 +11,30 @@ class TodoListScreen extends StatelessWidget {
 
   const TodoListScreen({Key key, this.items, this.canReorder = false})
       : super(key: key);
+
+  void _onToggle(BuildContext context, TodoItem item) {
+    context
+        .read<TodoListCubit>()
+        .toggleItemState(item);
+  }
+
+  void _onDelete(BuildContext context, TodoItem item) {
+    context.read<TodoListCubit>().deleteTodo(item);
+  }
+
+  void _onEdit(BuildContext context, TodoItem oldItem) {
+    showGeneralDialog(
+        barrierDismissible: true,
+        barrierLabel: '',
+        context: context,
+        pageBuilder: (_, __, ___) => EditTodoDialog(
+          itemToEdit: oldItem,
+          onSubmit: (newTodo) {
+            context.read<TodoListCubit>().editTodo(oldItem: oldItem, newItem: newTodo);
+            Navigator.pop(context);
+          },
+        ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,12 +54,13 @@ class TodoListScreen extends StatelessWidget {
                         margin: EdgeInsets.only(bottom: 4),
                         child: TodoItemWidget(
                           onToggle: () {
-                            context
-                                .read<TodoListCubit>()
-                                .toggleItemState(items[i]);
+                            _onToggle(context, items[i]);
                           },
                           onDelete: () {
-                            context.read<TodoListCubit>().deleteTodo(items[i]);
+                            _onDelete(context, items[i]);
+                          },
+                          onEdit: () {
+                            _onEdit(context, items[i]);
                           },
                           item: items[i],
                         ),
@@ -44,21 +70,23 @@ class TodoListScreen extends StatelessWidget {
                     if (oldIndex < newIndex) {
                       newIndex -= 1;
                     }
-                    print("$oldIndex $newIndex");
                     context.read<TodoListCubit>().updateOrder(oldIndex, newIndex);
                   },
                 ),
             )
             : ListView.separated(
-                itemBuilder: (_, index) => TodoItemWidget(
-                  key: ValueKey(index),
+                itemBuilder: (_, i) => TodoItemWidget(
+                  key: ValueKey(i),
                   onToggle: () {
-                    context.read<TodoListCubit>().toggleItemState(items[index]);
+                    _onToggle(context, items[i]);
                   },
                   onDelete: () {
-                    context.read<TodoListCubit>().deleteTodo(items[index]);
+                    _onDelete(context, items[i]);
                   },
-                  item: items[index],
+                  onEdit: () {
+                    _onEdit(context, items[i]);
+                  },
+                  item: items[i],
                 ),
                 itemCount: items.length,
                 separatorBuilder: (_, __) => SizedBox(

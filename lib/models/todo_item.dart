@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 class TodoItem extends Equatable {
   TodoItem({
     this.text,
-    this.isDone,
+    this.isDone = false,
   });
 
   final String text;
